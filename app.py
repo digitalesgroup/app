@@ -8,6 +8,14 @@ from tensorflow.keras.layers import GRU, Dense
 import tensorflow as tf
 from datetime import datetime, timedelta
 
+from flask import Flask, jsonify, reques
+
+
+app = Flask(__name__)
+@app.route("/")
+async def home():
+    return "API acknowledgement!"
+
 # Establecer semillas aleatorias para reproducibilidad
 np.random.seed(42)
 tf.random.set_seed(42)
@@ -103,5 +111,6 @@ print(f"Predicción del precio para la próxima hora: {predicted_price_next_hour
 
 # Guardar el modelo en formato HDF5
 model.save("my_model.h5")
-
+if __name__ == '__main__':
+    app.run()
 
