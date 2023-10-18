@@ -5,6 +5,7 @@ gunicorn
 certifi==2023.7.22
 charset-normalizer==3.3.0
 colorama==0.4.6
+python-3.10
 filelock==3.12.4
 flatbuffers==23.5.26
 fsspec==2023.9.2
