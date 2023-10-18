@@ -16,6 +16,7 @@ app = Flask(__name__)
 np.random.seed(42)
 tf.random.set_seed(42)
 
+
 # Función para obtener datos de Binance sin caché
 def get_binance_data(api_key, symbol="BTCUSDT", interval="1h", limit=2000):
     endpoint = f"https://api.binance.com/api/v3/klines"
@@ -42,6 +43,27 @@ def create_dataset(data, window_size):
         Y.append(data[i + window_size])
     return np.array(X), np.array(Y)
 
+
+# Clave API de Binance (reemplazar por tu clave real)
+api_key = ""
+
+# Obtener datos de Binance
+df = get_binance_data(api_key)
+
+# Convertir el precio de cierre a valores flotantes y escalarlo
+price = df['close'].astype(float).values
+scaler = MinMaxScaler()
+price_scaled = scaler.fit_transform(price.reshape(-1, 1))
+
+# Tamaño de la ventana de datos
+window_size = 500
+
+# Crear conjuntos de datos
+X, Y = create_dataset(price_scaled, window_size)
+
+# Usar TimeSeriesSplit para validación temporal
+tscv = TimeSeriesSplit(n_splits=5)
+
 # Función para predecir el precio de cierre de la próxima hora
 def predict_next_hour_price(model, recent_data, scaler):
     if len(recent_data) != window_size:
@@ -58,27 +80,7 @@ def home():
     return "API acknowledgement!"
 
 @app.route("/train")
-def train():
-    # Clave API de Binance (reemplazar por tu clave real)
-    api_key = ""
-    
-    # Obtener datos de Binance
-    df = get_binance_data(api_key)
-    
-    # Convertir el precio de cierre a valores flotantes y escalarlo
-    price = df['close'].astype(float).values
-    scaler = MinMaxScaler()
-    price_scaled = scaler.fit_transform(price.reshape(-1, 1))
-    
-    # Tamaño de la ventana de datos
-    window_size = 500
-    
-    # Crear conjuntos de datos
-    X, Y = create_dataset(price_scaled, window_size)
-    
-    # Usar TimeSeriesSplit para validación temporal
-    tscv = TimeSeriesSplit(n_splits=5)
-    
+def train(): 
     # Crear un modelo de red neuronal recurrente (GRU)
     model = Sequential([
         GRU(50, input_shape=(window_size, 1), return_sequences=True),
@@ -110,17 +112,17 @@ def train():
     print(f"Timestamp de la última hora completa (GMT-5): {last_timestamp - timedelta(hours=5)}")
     print(f"Precio de cierre de la última hora completa: {last_complete_hour_prices[-1]}")
     print(f"Predicción del precio para la próxima hora: {predicted_price_next_hour:.2f}")
-
-    response = {"Timestamp de la última hora completa (GMT-5)": (last_timestamp - timedelta(hours=5)),
-                "Precio de cierre de la última hora completa": (last_complete_hour_prices[-1]),
-                "Predicción del precio para la próxima hora": predicted_price_next_hour           
+    first = f"{last_timestamp - timedelta(hours=5)}"
+    second = f"{last_complete_hour_prices[-1]}"
+    third = f"{predicted_price_next_hour:.2f}"
+    response = {"Timestamp de la última hora completa (GMT-5)": first,
+                "Precio de cierre de la última hora completa": second,
+                "Predicción del precio para la próxima hora": third         
                                                                  }
     
     # Guardar el modelo en formato HDF5
     #model.save("my_model.h5")
     return jsonify(response)
 
-
 if __name__ == '__main__':
     app.run()
-
