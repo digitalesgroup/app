@@ -101,3 +101,7 @@ print(f"Timestamp de la última hora completa (GMT-5): {last_timestamp - timedel
 print(f"Precio de cierre de la última hora completa: {last_complete_hour_prices[-1]}")
 print(f"Predicción del precio para la próxima hora: {predicted_price_next_hour:.2f}")
 
+# Guardar el modelo en formato HDF5
+model.save("my_model.h5")
+
+
