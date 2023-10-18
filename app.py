@@ -8,7 +8,7 @@ from tensorflow.keras.layers import GRU, Dense
 import tensorflow as tf
 from datetime import datetime, timedelta
 
-from flask import Flask, jsonify, reques
+from flask import Flask, jsonify, request
 
 
 app = Flask(__name__)
