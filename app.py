@@ -8,8 +8,7 @@ from tensorflow.keras.layers import GRU, Dense
 import tensorflow as tf
 from datetime import datetime, timedelta
 
-from flask import Flask, jsonify, requests
-
+from flask import Flask, jsonify
 app = Flask(__name__)
 
 # Establecer semillas aleatorias para reproducibilidad
